@@ -15,20 +15,11 @@
         android:id="@+id/serverselect"
         android:layout_width="96dp"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/clientselect"
-        android:layout_alignParentLeft="true"
+        android:layout_above="@+id/quit"
+        android:layout_alignLeft="@+id/name"
         android:layout_below="@id/name"
-        android:layout_toLeftOf="@+id/clientselect"
+        android:layout_toLeftOf="@+id/quit"
         android:text="Server Mode" />
-
-    <Button
-        android:id="@+id/clientselect"
-        android:layout_width="146dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/name"
-        android:layout_centerVertical="true"
-        android:text="Client Mode" />
 
     <Button
         android:id="@+id/quit"
@@ -45,5 +36,14 @@
         android:layout_below="@+id/quit"
         android:layout_centerHorizontal="true"
         android:text="Camera" />
+
+    <Button
+        android:id="@+id/clientselect"
+        android:layout_width="146dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/name"
+        android:layout_toRightOf="@+id/quit"
+        android:text="Client Mode" />
 
 </RelativeLayout>

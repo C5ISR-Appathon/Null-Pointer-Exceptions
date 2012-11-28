@@ -30,7 +30,6 @@ import android.widget.Toast;
 public class ClientModeActivity extends AbstractNetworkActivity {
 	 public static String TAG = "testApp";
 	 private WifiP2pManager manager;
-	 private boolean isWifiP2pEnabled = false;
 	 private boolean retryChannel = false;
 
 	 private final IntentFilter intentFilter = new IntentFilter();
@@ -46,6 +45,9 @@ public class ClientModeActivity extends AbstractNetworkActivity {
     //RECORDING HOW MUCH TIMES BUTTON WAS CLICKED
     int clickCounter=0;
     
+    public void setIsWifiP2pEnabled(boolean isWifiP2pEnabled) {
+        this.isWifiP2pEnabled = isWifiP2pEnabled;
+    }
     
     @Override
     public void onCreate(Bundle icicle) {        
@@ -61,6 +63,7 @@ public class ClientModeActivity extends AbstractNetworkActivity {
 
         manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         channel = manager.initialize(this, getMainLooper(), null);
+        
         
     }
 
@@ -113,11 +116,11 @@ public class ClientModeActivity extends AbstractNetworkActivity {
                 return true;
 
             case R.id.atn_direct_discover:
-                if (!isWifiP2pEnabled) {
+                /*if (!isWifiP2pEnabled) {
                     Toast.makeText(ClientModeActivity.this, R.string.p2p_off_warning,
                             Toast.LENGTH_SHORT).show();
                     return true;
-                }
+                }*/
                 final DeviceListFragment fragment = (DeviceListFragment) getFragmentManager()
                         .findFragmentById(R.id.frag_list);
                 fragment.onInitiateDiscovery();
