@@ -8,7 +8,7 @@ import android.content.Context;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 
-import mil.spawar.npe.WifiBroadcastReciever;
+//import mil.spawar.npe.WifiBroadcastReciever;
 import mil.spawar.npe.networking.interfaces.ServerNetworkInterface;
 import mil.spawar.npe.objects.Client;
 
@@ -22,7 +22,7 @@ public class BasicServerNetwork implements ServerNetworkInterface {
 	{
 		manager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
 		channel = manager.initialize(activity, activity.getMainLooper(), null);
-		receiver = new WifiBroadcastReciever(manager, channel, activity);
+		//receiver = new WifiBroadcastReciever(manager, channel, activity);
 	}
 	
 	@Override

@@ -2,7 +2,7 @@ package mil.spawar.npe.networking.implementations;
 
 import java.util.List;
 
-import mil.spawar.npe.WifiBroadcastReciever;
+//import mil.spawar.npe.WifiBroadcastReciever;
 import mil.spawar.npe.networking.interfaces.ClientNetworkInterface;
 import mil.spawar.npe.objects.Server;
 import android.app.Activity;
@@ -21,7 +21,7 @@ public class BasicClientNetwork implements ClientNetworkInterface {
 	{
 		manager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
 		channel = manager.initialize(activity, activity.getMainLooper(), null);
-		receiver = new WifiBroadcastReciever(manager, channel, activity);
+		//receiver = new WifiBroadcastReciever(manager, channel, activity);
 	}
 		
 	@Override
