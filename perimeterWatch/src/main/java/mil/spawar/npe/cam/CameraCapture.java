@@ -2,6 +2,7 @@ package mil.spawar.npe.cam;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Calendar;
 
 import mil.spawar.npe.R;
 import android.app.Activity;
@@ -61,10 +62,15 @@ public class CameraCapture extends Activity {
 
 		startPreview();
 
+		continueTakingPics = true;
+		new TakePhotoTask().execute();
 	}
 
 	@Override
 	public void onPause() {
+
+		continueTakingPics = false;
+		
 		if (inPreview) {
 			camera.stopPreview();
 		}
@@ -165,6 +171,7 @@ public class CameraCapture extends Activity {
 
 	private void startPreview() {
 		if (cameraConfigured && camera != null) {
+			// camera.setPreviewCallback(previewCallback);
 			camera.startPreview();
 			inPreview = true;
 		}
@@ -188,6 +195,7 @@ public class CameraCapture extends Activity {
 
 	Camera.PictureCallback photoCallback = new Camera.PictureCallback() {
 		public void onPictureTaken(byte[] data, Camera camera) {
+			Log.d(TAG, "Got picture data, saving to file...");
 			new SavePhotoTask().execute(data);
 			camera.startPreview();
 			inPreview = true;
@@ -197,9 +205,11 @@ public class CameraCapture extends Activity {
 	class SavePhotoTask extends AsyncTask<byte[], String, String> {
 		@Override
 		protected String doInBackground(byte[]... jpeg) {
-			String storageDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures";
+			String storageDir = Environment.getExternalStorageDirectory()
+					.getAbsolutePath() + "/Pictures";
 			Log.d(TAG, "Attempting to save photo to " + storageDir);
-			File photo = new File(storageDir, "photo.jpg");
+			File photo = new File(storageDir, Calendar.getInstance()
+					.getTimeInMillis() + ".jpg");
 
 			if (photo.exists()) {
 				photo.delete();
@@ -217,4 +227,40 @@ public class CameraCapture extends Activity {
 			return (null);
 		}
 	}
+
+	boolean continueTakingPics = false;
+
+	class TakePhotoTask extends AsyncTask {
+
+		@Override
+		protected Object doInBackground(Object... arg0) {
+			Log.d(TAG, "do in background called...");
+
+			while (continueTakingPics) {
+				try {
+					Thread.sleep(1000 * 2);
+					Log.d(TAG, "Taking photo...");
+					camera.takePicture(null, null, photoCallback);
+				} catch (InterruptedException e) {
+					continueTakingPics = false;
+				}
+			}
+			return null;
+		}
+
+	}
+
+	// Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
+	//
+	// int i = 1;
+	// @Override
+	// public void onPreviewFrame(byte[] data, Camera camera) {
+	// Log.d(TAG, "Got preview frame...");
+	// if(i % 15 == 0){
+	// Log.d(TAG, "Attempting to take picture...");
+	// new TakePhotoTask().execute();
+	// }
+	// i++;
+	// }
+	// };
 }
