@@ -1,12 +1,40 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="@string/hello"
-    />
-</LinearLayout>
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp" >
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="fill_parent"
+        android:layout_height="20dp"
+        android:layout_centerHorizontal="true"
+        android:hint="Welcome to Sauron" />
+
+    <Button
+        android:id="@+id/serverselect"
+        android:layout_width="96dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/clientselect"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/name"
+        android:text="Server Mode" />
+
+    <Button
+        android:id="@+id/clientselect"
+        android:layout_width="146dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/name"
+        android:layout_centerVertical="true"
+        android:text="Client Mode" />
+
+    <Button
+        android:id="@+id/quit"
+        android:layout_width="96dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/clientselect"
+        android:layout_centerHorizontal="true"
+        android:text="Quit" />
+
+</RelativeLayout>
