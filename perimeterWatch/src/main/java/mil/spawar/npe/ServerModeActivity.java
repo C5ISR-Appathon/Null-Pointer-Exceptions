@@ -63,6 +63,13 @@ public class ServerModeActivity extends AbstractNetworkActivity {
         channel = manager.initialize(this, getMainLooper(), null);
     }
 
+    @Override
+    public void onBackPressed()
+    {
+    	super.onBackPressed();
+    	disconnect();
+    }
+    
     /** register the BroadcastReceiver with the intent values to be matched */
     @Override
     public void onResume() {
@@ -80,7 +87,7 @@ public class ServerModeActivity extends AbstractNetworkActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.action_items, menu);
+        inflater.inflate(R.menu.server_menu, menu);
         return true;
     }
 
