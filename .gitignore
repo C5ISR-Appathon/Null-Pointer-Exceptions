@@ -1,5 +1,6 @@
 #Maven target directories
 */target/**
+*.orig
 
 # built application files
 *.apk
