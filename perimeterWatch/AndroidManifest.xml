@@ -30,6 +30,8 @@
                     android:label="Perimeter Watch - Client Mode"></activity>
     <activity android:name=".ServerModeActivity"
                     android:label="Perimeter Watch - Server Mode"></activity>
+    <activity android:name="mil.spawar.npe.cam.CameraCapture" 
+                    android:label="Camera Capture" />
   </application>
 
 </manifest>

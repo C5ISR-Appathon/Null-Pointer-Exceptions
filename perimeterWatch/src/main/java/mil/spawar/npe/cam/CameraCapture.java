@@ -16,32 +16,29 @@
 
 package mil.spawar.npe.cam;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
+
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
+import android.hardware.Camera.PictureCallback;
+import android.hardware.Camera.PreviewCallback;
 import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-
-import java.io.IOException;
-import java.util.List;
-
-import mil.spawar.npe.R.string;
-
 // Need the following import to get access to the app resources, since this
 // class is in a sub-package.
-import mil.spawar.npe.R;
 
 // ----------------------------------------------------------------------
 
@@ -50,7 +47,7 @@ public class CameraCapture extends Activity {
 	
     private Preview mPreview;
     private volatile boolean running = false;
-    private PictureTaker pictureTaker;
+    //private PictureTaker pictureTaker;
     private long PIC_INTERVAL = (long)1000 * 2;
     
     Camera mCamera;
@@ -95,40 +92,40 @@ public class CameraCapture extends Activity {
         cameraCurrentlyLocked = defaultCameraId;
         mPreview.setCamera(mCamera);
         
-        running = true;
-        if(pictureTaker == null)
-        	pictureTaker = new PictureTaker();
-        new Thread(pictureTaker).start();
+//        running = true;
+//        if(pictureTaker == null)
+//        	pictureTaker = new PictureTaker();
+//        new Thread(pictureTaker).start();
     }
     
-    public class PictureTaker implements Runnable {
-
-		@Override
-		public void run() {
-			while(running){
-				try {
-					Thread.sleep(PIC_INTERVAL);
-					Log.d(TAG, "Taing pic...");
-				} catch (InterruptedException e) {
-					running = false;
-				}
-			}
-		}
-    	
-    }
+//    public class PictureTaker implements Runnable {
+//
+//		@Override
+//		public void run() {
+//			while(running){
+//				try {
+//					Thread.sleep(PIC_INTERVAL);
+//					Log.d(TAG, "Taing pic...");
+//					mCamera.takePicture(null, null, mPicture);
+//				} catch (InterruptedException e) {
+//					running = false;
+//				}
+//			}
+//		}
+//    	
+//    }
 
     @Override
     protected void onPause() {
         super.onPause();
         
-        //stop the picture taker thread
-        running = false;
-        try {
-			Thread.sleep(PIC_INTERVAL);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			Log.d(TAG, "Failed to wait set amound of time for pic taker thread to stop");
-		}
+//        //stop the picture taker thread
+//        running = false;
+//        try {
+//			Thread.sleep(PIC_INTERVAL);
+//		} catch (InterruptedException e) {
+//			Log.d(TAG, "Failed to wait set amound of time for pic taker thread to stop");
+//		}
         
 
         // Because the Camera object is a shared resource, it's very
@@ -188,6 +185,24 @@ public class CameraCapture extends Activity {
 //            return super.onOptionsItemSelected(item);
 //        }
 //    }
+    
+    private PreviewCallback mPreviewCallback = new PreviewCallback() {
+
+		@Override
+		public void onPreviewFrame(byte[] arg0, Camera arg1) {
+			Log.d(TAG, "Preview frame is ready!");
+			mCamera.takePicture(null, null, mPicture);
+		}
+   
+    };
+    
+    private PictureCallback mPicture = new PictureCallback() {
+
+        @Override
+        public void onPictureTaken(byte[] data, Camera camera) {
+            Log.d(TAG, "Got picture!");
+        }
+    };
 }
 
 // ----------------------------------------------------------------------
