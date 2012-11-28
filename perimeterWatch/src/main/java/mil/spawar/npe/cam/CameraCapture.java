@@ -46,7 +46,13 @@ import mil.spawar.npe.R;
 // ----------------------------------------------------------------------
 
 public class CameraCapture extends Activity {
+	private final static String TAG = "CameraCapture";
+	
     private Preview mPreview;
+    private volatile boolean running = false;
+    private PictureTaker pictureTaker;
+    private long PIC_INTERVAL = (long)1000 * 2;
+    
     Camera mCamera;
     int numberOfCameras;
     int cameraCurrentlyLocked;
@@ -88,11 +94,42 @@ public class CameraCapture extends Activity {
         mCamera = Camera.open();
         cameraCurrentlyLocked = defaultCameraId;
         mPreview.setCamera(mCamera);
+        
+        running = true;
+        if(pictureTaker == null)
+        	pictureTaker = new PictureTaker();
+        new Thread(pictureTaker).start();
+    }
+    
+    public class PictureTaker implements Runnable {
+
+		@Override
+		public void run() {
+			while(running){
+				try {
+					Thread.sleep(PIC_INTERVAL);
+					Log.d(TAG, "Taing pic...");
+				} catch (InterruptedException e) {
+					running = false;
+				}
+			}
+		}
+    	
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        
+        //stop the picture taker thread
+        running = false;
+        try {
+			Thread.sleep(PIC_INTERVAL);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			Log.d(TAG, "Failed to wait set amound of time for pic taker thread to stop");
+		}
+        
 
         // Because the Camera object is a shared resource, it's very
         // important to release it when the activity is paused.
