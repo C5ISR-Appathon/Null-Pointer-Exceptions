@@ -30,7 +30,6 @@ import android.widget.Toast;
 public class ServerModeActivity extends AbstractNetworkActivity {
 	 public static String TAG = "testApp";
 	 private WifiP2pManager manager;
-	 private boolean isWifiP2pEnabled = false;
 	 private boolean retryChannel = false;
 
 	 private final IntentFilter intentFilter = new IntentFilter();
