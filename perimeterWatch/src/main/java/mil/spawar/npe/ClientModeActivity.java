@@ -3,6 +3,11 @@ package mil.spawar.npe;
 import java.util.ArrayList;
 
 import android.app.ListActivity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,12 +25,19 @@ public class ClientModeActivity extends ListActivity {
 
     //RECORDING HOW MUCH TIMES BUTTON WAS CLICKED
     int clickCounter=0;
-
+	private IntentFilter intentFilter;
+    
+    
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 		Log.i(TAG, "onCreate");
-		
+				
+		intentFilter = new IntentFilter();
+		intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+		intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+		intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+		intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
         setContentView(R.layout.clientview_findhost);
         adapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,listItems);
         setListAdapter(adapter);

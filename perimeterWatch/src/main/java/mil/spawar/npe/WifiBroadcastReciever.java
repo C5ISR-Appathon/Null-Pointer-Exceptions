@@ -1,5 +1,6 @@
 package mil.spawar.npe;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,9 +11,9 @@ public class WifiBroadcastReciever extends BroadcastReceiver {
 
     private WifiP2pManager manager;
     private Channel channel;
-    private MainActivity activity;
+    private Activity activity;
     
-    public WifiBroadcastReciever(WifiP2pManager manager, Channel channel,MainActivity activity) 
+    public WifiBroadcastReciever(WifiP2pManager manager, Channel channel,Activity activity) 
     {
         super();
         this.manager = manager;
