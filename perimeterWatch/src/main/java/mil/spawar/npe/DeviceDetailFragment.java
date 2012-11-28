@@ -68,7 +68,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         mContentView = inflater.inflate(R.layout.device_detail, null);
-        mContentView.findViewById(R.id.btn_disconnect).setVisibility(View.GONE);
+       // mContentView.findViewById(R.id.btn_disconnect).setVisibility(View.GONE);
         mContentView.findViewById(R.id.btn_start_client).setVisibility(View.GONE);
         mContentView.findViewById(R.id.btn_connect).setOnClickListener(new View.OnClickListener() {
 
@@ -167,14 +167,10 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
             // get file button.
         	
         	//We never want to make this visible in our version
-            //mContentView.findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
+            mContentView.findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
             ((TextView) mContentView.findViewById(R.id.status_text)).setText(getResources()
                     .getString(R.string.client_text));
         }
-
-        // hide the connect button
-        mContentView.findViewById(R.id.btn_connect).setVisibility(View.GONE);
-        mContentView.findViewById(R.id.btn_disconnect).setVisibility(View.VISIBLE);
     }
 
     /**
@@ -183,14 +179,14 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
      * @param device the device to be displayed
      */
     public void showDetails(WifiP2pDevice device) {
-        /*this.device = device;
+        this.device = device;
         this.getView().setVisibility(View.VISIBLE);
         TextView view = (TextView) mContentView.findViewById(R.id.device_address);
         view.setText(device.deviceAddress);
         view = (TextView) mContentView.findViewById(R.id.device_info);
-        view.setText(device.toString());*/
+        view.setText(device.toString());
     	
-    	TextView view = (TextView) mContentView.findViewById(R.id.device_address);
+    	/*TextView view = (TextView) mContentView.findViewById(R.id.device_address);
         view.setText(device.deviceAddress);
     	try {
 			List<String> files=getDeviceFileURIList(device);
@@ -203,7 +199,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 	        view.setText(device.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 
     }
 

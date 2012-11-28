@@ -16,7 +16,7 @@
 
 package mil.spawar.npe;
 
-import android.app.Activity;
+import mil.spawar.npe.cam.CameraCapture;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +26,7 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * A BroadcastReceiver that notifies of important wifi p2p events.
@@ -35,6 +36,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
     private WifiP2pManager manager;
     private Channel channel;
     private AbstractNetworkActivity activity;
+    private boolean server;
 
     /**
      * @param manager WifiP2pManager system service
@@ -42,11 +44,12 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
      * @param activity activity associated with the receiver
      */
     public WiFiDirectBroadcastReceiver(WifiP2pManager manager, Channel channel,
-    		AbstractNetworkActivity activity) {
+    		AbstractNetworkActivity activity,Boolean server) {
         super();
         this.manager = manager;
         this.channel = channel;
         this.activity = activity;
+        this.server=server;
     }
 
     /*
@@ -90,7 +93,16 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                     .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
             if (networkInfo.isConnected()) {
-
+            	//Starts camera
+            	
+            	Toast.makeText(context, "Successfully Connected.",
+                        Toast.LENGTH_SHORT).show();
+            	if(!server)
+            	{
+	            	Intent intent2 = new Intent(context, CameraCapture.class);
+			    	context.startActivity(intent2);
+            	}
+            	
                 // we are connected with the other device, request connection
                 // info to find group owner IP
 

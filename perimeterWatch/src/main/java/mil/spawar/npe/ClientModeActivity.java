@@ -78,7 +78,7 @@ public class ClientModeActivity extends AbstractNetworkActivity {
     @Override
     public void onResume() {
         super.onResume();
-        receiver = new WiFiDirectBroadcastReceiver(manager, channel, this);
+        receiver = new WiFiDirectBroadcastReceiver(manager, channel, this,true);
         registerReceiver(receiver, intentFilter);
     }
 
@@ -158,7 +158,6 @@ public class ClientModeActivity extends AbstractNetworkActivity {
 
             @Override
             public void onSuccess() {
-                // WiFiDirectBroadcastReceiver will notify us. Ignore for now.
             }
 
             @Override

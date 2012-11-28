@@ -73,7 +73,7 @@ public class ServerModeActivity extends AbstractNetworkActivity {
     @Override
     public void onResume() {
         super.onResume();
-        receiver = new WiFiDirectBroadcastReceiver(manager, channel, this);
+        receiver = new WiFiDirectBroadcastReceiver(manager, channel, this,false);
         registerReceiver(receiver, intentFilter);
     }
 

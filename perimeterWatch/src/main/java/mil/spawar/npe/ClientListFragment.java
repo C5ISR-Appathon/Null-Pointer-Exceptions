@@ -18,9 +18,13 @@ package mil.spawar.npe;
 
 import java.util.Collection;
 
+import mil.spawar.npe.cam.CameraCapture;
+
+import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * A ListFragment that displays available peers on discovery and requests the
@@ -57,5 +61,5 @@ public class ClientListFragment extends DeviceListFragment {
         }
 
     }
-
+    
 }
