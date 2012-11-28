@@ -27,10 +27,11 @@
       </intent-filter>
     </activity>
     <activity android:name=".ClientModeActivity"
-                    android:label="Client Mod"></activity>
+                    android:label="Perimeter Watch - Client Mode"></activity>
     <activity android:name=".ServerModeActivity"
-                    android:label="Server Mod"></activity>
-    <activity android:name="mil.spawar.npe.cam.CameraCapture" android:label="Camera Capture" />
+                    android:label="Perimeter Watch - Server Mode"></activity>
+    <activity android:name="mil.spawar.npe.cam.CameraCapture" 
+                    android:label="Camera Capture" />
   </application>
 
 </manifest>

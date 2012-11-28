@@ -1,5 +1,6 @@
 package mil.spawar.npe;
 
+import mil.spawar.npe.cam.CameraCapture;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -61,7 +62,23 @@ public class MainActivity extends Activity {
 			}
 
 		});
+		
+		Button camera = (Button) findViewById(R.id.camera);
+		camera.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent(MainActivity.this, CameraCapture.class);
+		    	startActivity(intent);
+			}
+
+		});
 	}
+	
+	 public void startCamera(View v){
+	    	Intent intent = new Intent(this, CameraCapture.class);
+	    	startActivity(intent);
+	    }
 
 }
 
