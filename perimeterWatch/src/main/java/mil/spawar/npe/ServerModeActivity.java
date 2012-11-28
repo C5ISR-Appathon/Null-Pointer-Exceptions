@@ -66,7 +66,7 @@ public class ServerModeActivity extends AbstractNetworkActivity {
     public void onBackPressed()
     {
     	super.onBackPressed();
-    	disconnect();
+    	//disconnect();
     }
     
     /** register the BroadcastReceiver with the intent values to be matched */

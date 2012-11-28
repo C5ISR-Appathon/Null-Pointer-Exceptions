@@ -16,10 +16,21 @@
 
 package mil.spawar.npe;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import mil.spawar.npe.DeviceListFragment.DeviceActionListener;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WpsInfo;
@@ -35,16 +46,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import mil.spawar.npe.DeviceListFragment.DeviceActionListener;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 /**
  * A fragment that manages a particular peer and allows interaction with device
@@ -67,6 +68,8 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         mContentView = inflater.inflate(R.layout.device_detail, null);
+        mContentView.findViewById(R.id.btn_disconnect).setVisibility(View.GONE);
+        mContentView.findViewById(R.id.btn_start_client).setVisibility(View.GONE);
         mContentView.findViewById(R.id.btn_connect).setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -100,7 +103,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                         ((DeviceActionListener) getActivity()).disconnect();
                     }
                 });
-
+        
         mContentView.findViewById(R.id.btn_start_client).setOnClickListener(
                 new View.OnClickListener() {
 
@@ -162,13 +165,16 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         } else if (info.groupFormed) {
             // The other device acts as the client. In this case, we enable the
             // get file button.
-            mContentView.findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
+        	
+        	//We never want to make this visible in our version
+            //mContentView.findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
             ((TextView) mContentView.findViewById(R.id.status_text)).setText(getResources()
                     .getString(R.string.client_text));
         }
 
         // hide the connect button
         mContentView.findViewById(R.id.btn_connect).setVisibility(View.GONE);
+        mContentView.findViewById(R.id.btn_disconnect).setVisibility(View.VISIBLE);
     }
 
     /**
@@ -177,15 +183,37 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
      * @param device the device to be displayed
      */
     public void showDetails(WifiP2pDevice device) {
-        this.device = device;
+        /*this.device = device;
         this.getView().setVisibility(View.VISIBLE);
         TextView view = (TextView) mContentView.findViewById(R.id.device_address);
         view.setText(device.deviceAddress);
         view = (TextView) mContentView.findViewById(R.id.device_info);
-        view.setText(device.toString());
+        view.setText(device.toString());*/
+    	
+    	TextView view = (TextView) mContentView.findViewById(R.id.device_address);
+        view.setText(device.deviceAddress);
+    	try {
+			List<String> files=getDeviceFileURIList(device);
+	        view = (TextView) mContentView.findViewById(R.id.device_info);
+	        
+	        String display="Files:\n";
+	        for(String name:files)
+		        display=display+"\t"+name+"\n";
+	        
+	        view.setText(device.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
     }
 
+    public List<String> getDeviceFileURIList(WifiP2pDevice device) throws IOException
+    {
+    	String dir=device.deviceAddress;
+    	String[] files=getResources().getAssets().list("/"+dir);
+		return Arrays.asList(files);
+    }
+    
     /**
      * Clears the UI fields after a disconnect or direct mode disable operation.
      */

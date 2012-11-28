@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <fragment
-            class="mil.spawar.npe.DeviceListFragment"
+            class="mil.spawar.npe.ServerListFragment"
             android:id="@+id/frag_list"
             android:layout_width="match_parent"
             android:layout_height="@dimen/phone_list_height">
