@@ -11,15 +11,20 @@
         android:layout_height="20dp"
         android:layout_centerHorizontal="true"
         android:hint="Client Mode" />
-    
+
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_alignRight="@+id/name"
-        android:layout_marginTop="16dp">
-
+        android:layout_marginTop="16dp" >
     </ListView>
+
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:onClick="startCamera"
+        android:text="Start Camera Test" />
 
     <Button
         android:id="@+id/quit"

@@ -2,12 +2,11 @@ package mil.spawar.npe;
 
 import java.util.ArrayList;
 
+import mil.spawar.npe.cam.CameraCapture;
 import android.app.ListActivity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -62,5 +61,10 @@ public class ClientModeActivity extends ListActivity {
     public void addItems(View v) {
         listItems.add("Clicked : "+clickCounter++);
         adapter.notifyDataSetChanged();
+    }
+    
+    public void startCamera(View v){
+    	Intent intent = new Intent(this, CameraCapture.class);
+    	startActivity(intent);
     }
 }
