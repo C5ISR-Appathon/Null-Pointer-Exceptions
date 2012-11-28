@@ -12,7 +12,7 @@ public class WifiBroadcastReciever extends BroadcastReceiver {
     private Channel channel;
     private MainActivity activity;
     
-    public WifiBroadcastReciever(WifiP2pManager manager, Channel channel,HelloAndroidActivity activity) 
+    public WifiBroadcastReciever(WifiP2pManager manager, Channel channel,MainActivity activity) 
     {
         super();
         this.manager = manager;
