@@ -2,12 +2,11 @@ package mil.spawar.npe;
 
 import java.util.ArrayList;
 
+import mil.spawar.npe.networking.implementations.BasicClientNetwork;
+import mil.spawar.npe.networking.interfaces.ClientNetworkInterface;
 import android.app.ListActivity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +15,7 @@ import android.widget.Button;
 
 public class ClientModeActivity extends ListActivity {
 	 private static String TAG = "testApp";
+	 private ClientNetworkInterface network; 
 	
     //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
     ArrayList<String> listItems=new ArrayList<String>();
@@ -33,6 +33,7 @@ public class ClientModeActivity extends ListActivity {
         super.onCreate(icicle);
 		Log.i(TAG, "onCreate");
 				
+		network=new BasicClientNetwork(this);
 		intentFilter = new IntentFilter();
 		intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
 		intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);

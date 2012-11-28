@@ -2,6 +2,9 @@ package mil.spawar.npe;
 
 import java.util.ArrayList;
 
+import mil.spawar.npe.networking.implementations.BasicServerNetwork;
+import mil.spawar.npe.networking.interfaces.ServerNetworkInterface;
+
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.BroadcastReceiver;
@@ -17,7 +20,8 @@ import android.widget.Button;
 
 public class ServerModeActivity extends ListActivity {
 	private static String TAG = "testApp";
-
+	private ServerNetworkInterface network; 
+	
 	// LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
 	ArrayList<String> listItems = new ArrayList<String>();
 
@@ -33,6 +37,8 @@ public class ServerModeActivity extends ListActivity {
 		super.onCreate(icicle);
 		Log.i(TAG, "onCreate");
 
+		network=new BasicServerNetwork(this);
+		
 		setContentView(R.layout.serverview);
 		adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, listItems);

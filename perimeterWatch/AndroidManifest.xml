@@ -27,9 +27,9 @@
       </intent-filter>
     </activity>
     <activity android:name=".ClientModeActivity"
-                    android:label="Client Mod"></activity>
+                    android:label="Perimeter Watch - Client Mode"></activity>
     <activity android:name=".ServerModeActivity"
-                    android:label="Server Mod"></activity>
+                    android:label="Perimeter Watch - Server Mode"></activity>
   </application>
 
 </manifest>

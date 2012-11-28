@@ -4,13 +4,6 @@
     android:layout_height="fill_parent"
     android:paddingLeft="16dp"
     android:paddingRight="16dp" >
-
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="fill_parent"
-        android:layout_height="20dp"
-        android:layout_centerHorizontal="true"
-        android:hint="Client Mode" />
     
     <ListView
         android:id="@android:id/list"
