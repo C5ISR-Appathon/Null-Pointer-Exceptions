@@ -37,5 +37,13 @@
         android:layout_below="@+id/clientselect"
         android:layout_centerHorizontal="true"
         android:text="Quit" />
+    
+    <Button
+        android:id="@+id/camera"
+        android:layout_width="96dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/quit"
+        android:layout_centerHorizontal="true"
+        android:text="Camera" />
 
 </RelativeLayout>
