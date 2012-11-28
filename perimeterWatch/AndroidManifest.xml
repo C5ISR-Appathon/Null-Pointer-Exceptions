@@ -32,7 +32,10 @@
                     android:label="Perimeter Watch - Server Mode"></activity>
     <activity android:name="mil.spawar.npe.cam.CameraCapture" 
                     android:label="Camera Capture" />
+    
+    <!-- Used for transferring files  after a successful connection -->
+    <service android:enabled="true" android:name=".FileTransferService" />
+    
   </application>
-
 </manifest>
 
