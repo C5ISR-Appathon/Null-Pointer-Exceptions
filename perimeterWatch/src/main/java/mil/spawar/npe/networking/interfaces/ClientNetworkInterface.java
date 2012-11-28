@@ -2,10 +2,11 @@ package mil.spawar.npe.networking.interfaces;
 
 import java.util.List;
 
-import mil.spawar.npe.objects.Client;
+import mil.spawar.npe.objects.Server;
 
 public interface ClientNetworkInterface {
-	public List<Client> getAllConnectedClients();
-	public void disconnectAllClients();
-	public void disconnectClient(Client client);
+	public List<Server> getAllServers();
+	public void connectToServer(Server server);
+	public void disconnectFromServer();
+	
 }
