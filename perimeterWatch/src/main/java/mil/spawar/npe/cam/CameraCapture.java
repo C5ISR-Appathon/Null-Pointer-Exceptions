@@ -1,391 +1,266 @@
-/*
- * Copyright (C) 2007 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package mil.spawar.npe.cam;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
+import java.util.Calendar;
 
+import mil.spawar.npe.R;
 import android.app.Activity;
-import android.content.Context;
+import android.graphics.ImageFormat;
 import android.hardware.Camera;
-import android.hardware.Camera.CameraInfo;
-import android.hardware.Camera.PictureCallback;
-import android.hardware.Camera.PreviewCallback;
-import android.hardware.Camera.Size;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-// Need the following import to get access to the app resources, since this
-// class is in a sub-package.
-
-// ----------------------------------------------------------------------
+import android.widget.Toast;
 
 public class CameraCapture extends Activity {
 	private final static String TAG = "CameraCapture";
 
-	private Preview mPreview;
-	private volatile boolean running = false;
-	// private PictureTaker pictureTaker;
-	private long PIC_INTERVAL = (long) 1000 * 2;
-
-	Camera mCamera;
-	int numberOfCameras;
-	int cameraCurrentlyLocked;
-
-	// The first rear facing camera
-	int defaultCameraId;
+	private SurfaceView preview = null;
+	private SurfaceHolder previewHolder = null;
+	private Camera camera = null;
+	private boolean inPreview = false;
+	private boolean cameraConfigured = false;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.camera_layout);
 
-		// Hide the window title.
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-		// Create a RelativeLayout container that will hold a SurfaceView,
-		// and set it as the content of our activity.
-		mPreview = new Preview(this);
-		setContentView(mPreview);
-
-		// Find the total number of cameras available
-		numberOfCameras = Camera.getNumberOfCameras();
-
-		// Find the ID of the default camera
-		CameraInfo cameraInfo = new CameraInfo();
-		for (int i = 0; i < numberOfCameras; i++) {
-			Camera.getCameraInfo(i, cameraInfo);
-			if (cameraInfo.facing == CameraInfo.CAMERA_FACING_BACK) {
-				defaultCameraId = i;
-			}
-		}
+		preview = (SurfaceView) findViewById(R.id.preview);
+		previewHolder = preview.getHolder();
+		previewHolder.addCallback(surfaceCallback);
+		previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 	}
 
 	@Override
-	protected void onResume() {
+	public void onResume() {
 		super.onResume();
 
-		// Open the default i.e. the first rear facing camera.
-		mCamera = Camera.open();
-		cameraCurrentlyLocked = defaultCameraId;
-		mPreview.setCamera(mCamera);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+			Camera.CameraInfo info = new Camera.CameraInfo();
 
-		mCamera.setPreviewCallback(mPreviewCallback);
-		// running = true;
-		// if(pictureTaker == null)
-		// pictureTaker = new PictureTaker();
-		// new Thread(pictureTaker).start();
-	}
+			for (int i = 0; i < Camera.getNumberOfCameras(); i++) {
+				Camera.getCameraInfo(i, info);
 
-	// public class PictureTaker implements Runnable {
-	//
-	// @Override
-	// public void run() {
-	// while(running){
-	// try {
-	// Thread.sleep(PIC_INTERVAL);
-	// Log.d(TAG, "Taing pic...");
-	// mCamera.takePicture(null, null, mPicture);
-	// } catch (InterruptedException e) {
-	// running = false;
-	// }
-	// }
-	// }
-	//
-	// }
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		// //stop the picture taker thread
-		// running = false;
-		// try {
-		// Thread.sleep(PIC_INTERVAL);
-		// } catch (InterruptedException e) {
-		// Log.d(TAG,
-		// "Failed to wait set amound of time for pic taker thread to stop");
-		// }
-
-		// Because the Camera object is a shared resource, it's very
-		// important to release it when the activity is paused.
-		if (mCamera != null) {
-			mPreview.setCamera(null);
-			mCamera.release();
-			mCamera = null;
-		}
-	}
-
-	// @Override
-	// public boolean onCreateOptionsMenu(Menu menu) {
-	//
-	// // Inflate our menu which can gather user input for switching camera
-	// MenuInflater inflater = getMenuInflater();
-	// inflater.inflate(R.menu.camera_menu, menu);
-	// return true;
-	// }
-
-	// @Override
-	// public boolean onOptionsItemSelected(MenuItem item) {
-	// // Handle item selection
-	// switch (item.getItemId()) {
-	// case R.id.switch_cam:
-	// // check for availability of multiple cameras
-	// if (numberOfCameras == 1) {
-	// AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	// builder.setMessage(this.getString(R.string.camera_alert))
-	// .setNeutralButton("Close", null);
-	// AlertDialog alert = builder.create();
-	// alert.show();
-	// return true;
-	// }
-	//
-	// // OK, we have multiple cameras.
-	// // Release this camera -> cameraCurrentlyLocked
-	// if (mCamera != null) {
-	// mCamera.stopPreview();
-	// mPreview.setCamera(null);
-	// mCamera.release();
-	// mCamera = null;
-	// }
-	//
-	// // Acquire the next camera and request Preview to reconfigure
-	// // parameters.
-	// mCamera = Camera
-	// .open((cameraCurrentlyLocked + 1) % numberOfCameras);
-	// cameraCurrentlyLocked = (cameraCurrentlyLocked + 1)
-	// % numberOfCameras;
-	// mPreview.switchCamera(mCamera);
-	//
-	// // Start the preview
-	// mCamera.startPreview();
-	// return true;
-	// default:
-	// return super.onOptionsItemSelected(item);
-	// }
-	// }
-
-	int i = 0;
-	private PreviewCallback mPreviewCallback = new PreviewCallback() {
-
-		@Override
-		public void onPreviewFrame(byte[] arg0, Camera arg1) {
-//			Log.d(TAG, "Restarting preview");
-//			mCamera.startPreview();
-//			Log.d(TAG, "Preview restarted");
-			
-			Log.d(TAG, "Preview frame is ready, using " + mCamera.getParameters().getPreviewFormat() + " format...");
-			i++;
-			if (i % 10 == 0) {
-				Log.d(TAG, "Taking picture...");
-				//mCamera.takePicture(null, null, mPicture);
-			}
-		}
-
-	};
-
-	private byte[] previous;
-	
-	private PictureCallback mPicture = new PictureCallback() {
-
-		@Override
-		public void onPictureTaken(byte[] data, Camera camera) {
-			Log.d(TAG, "Got picture! - in "  + mCamera.getParameters().getPictureFormat() + " format...");
-//			try {
-//				mCamera.reconnect();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//			mCamera.startPreview();
-		}
-	};
-}
-
-// ----------------------------------------------------------------------
-
-/**
- * A simple wrapper around a Camera and a SurfaceView that renders a centered
- * preview of the Camera to the surface. We need to center the SurfaceView
- * because not all devices have cameras that support preview sizes at the same
- * aspect ratio as the device's display.
- */
-class Preview extends ViewGroup implements SurfaceHolder.Callback {
-	private final String TAG = "Preview";
-
-	SurfaceView mSurfaceView;
-	SurfaceHolder mHolder;
-	Size mPreviewSize;
-	List<Size> mSupportedPreviewSizes;
-	Camera mCamera;
-
-	Preview(Context context) {
-		super(context);
-
-		mSurfaceView = new SurfaceView(context);
-		addView(mSurfaceView);
-
-		// Install a SurfaceHolder.Callback so we get notified when the
-		// underlying surface is created and destroyed.
-		mHolder = mSurfaceView.getHolder();
-		mHolder.addCallback(this);
-		mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-	}
-
-	public void setCamera(Camera camera) {
-		mCamera = camera;
-		if (mCamera != null) {
-			mSupportedPreviewSizes = mCamera.getParameters()
-					.getSupportedPreviewSizes();
-			requestLayout();
-		}
-	}
-
-	public void switchCamera(Camera camera) {
-		setCamera(camera);
-		try {
-			camera.setPreviewDisplay(mHolder);
-		} catch (IOException exception) {
-			Log.e(TAG, "IOException caused by setPreviewDisplay()", exception);
-		}
-		Camera.Parameters parameters = camera.getParameters();
-		parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
-		requestLayout();
-
-		camera.setParameters(parameters);
-	}
-
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		// We purposely disregard child measurements because act as a
-		// wrapper to a SurfaceView that centers the camera preview instead
-		// of stretching it.
-		final int width = resolveSize(getSuggestedMinimumWidth(),
-				widthMeasureSpec);
-		final int height = resolveSize(getSuggestedMinimumHeight(),
-				heightMeasureSpec);
-		setMeasuredDimension(width, height);
-
-		if (mSupportedPreviewSizes != null) {
-			mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes, width,
-					height);
-		}
-	}
-
-	@Override
-	protected void onLayout(boolean changed, int l, int t, int r, int b) {
-		if (changed && getChildCount() > 0) {
-			final View child = getChildAt(0);
-
-			final int width = r - l;
-			final int height = b - t;
-
-			int previewWidth = width;
-			int previewHeight = height;
-			if (mPreviewSize != null) {
-				previewWidth = mPreviewSize.width;
-				previewHeight = mPreviewSize.height;
-			}
-
-			// Center the child SurfaceView within the parent.
-			if (width * previewHeight > height * previewWidth) {
-				final int scaledChildWidth = previewWidth * height
-						/ previewHeight;
-				child.layout((width - scaledChildWidth) / 2, 0,
-						(width + scaledChildWidth) / 2, height);
-			} else {
-				final int scaledChildHeight = previewHeight * width
-						/ previewWidth;
-				child.layout(0, (height - scaledChildHeight) / 2, width,
-						(height + scaledChildHeight) / 2);
-			}
-		}
-	}
-
-	public void surfaceCreated(SurfaceHolder holder) {
-		// The Surface has been created, acquire the camera and tell it where
-		// to draw.
-		try {
-			if (mCamera != null) {
-				mCamera.setPreviewDisplay(holder);
-			}
-		} catch (IOException exception) {
-			Log.e(TAG, "IOException caused by setPreviewDisplay()", exception);
-		}
-	}
-
-	public void surfaceDestroyed(SurfaceHolder holder) {
-		// Surface will be destroyed when we return, so stop the preview.
-		if (mCamera != null) {
-			mCamera.stopPreview();
-		}
-	}
-
-	private Size getOptimalPreviewSize(List<Size> sizes, int w, int h) {
-		final double ASPECT_TOLERANCE = 0.1;
-		double targetRatio = (double) w / h;
-		if (sizes == null)
-			return null;
-
-		Size optimalSize = null;
-		double minDiff = Double.MAX_VALUE;
-
-		int targetHeight = h;
-
-		// Try to find an size match aspect ratio and size
-		for (Size size : sizes) {
-			double ratio = (double) size.width / size.height;
-			if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE)
-				continue;
-			if (Math.abs(size.height - targetHeight) < minDiff) {
-				optimalSize = size;
-				minDiff = Math.abs(size.height - targetHeight);
-			}
-		}
-
-		// Cannot find the one match the aspect ratio, ignore the requirement
-		if (optimalSize == null) {
-			minDiff = Double.MAX_VALUE;
-			for (Size size : sizes) {
-				if (Math.abs(size.height - targetHeight) < minDiff) {
-					optimalSize = size;
-					minDiff = Math.abs(size.height - targetHeight);
+				if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+					camera = Camera.open(i);
 				}
 			}
 		}
-		return optimalSize;
+
+		if (camera == null) {
+			camera = Camera.open();
+		}
+
+		startPreview();
+
+		continueTakingPics = true;
+		new TakePhotoTask().execute();
 	}
 
-	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-		// Now that the size is known, set up the camera parameters and begin
-		// the preview.
-		Camera.Parameters parameters = mCamera.getParameters();
-		parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
-		requestLayout();
+	@Override
+	public void onPause() {
 
-		mCamera.setParameters(parameters);
-		mCamera.startPreview();
+		continueTakingPics = false;
+		
+		if (inPreview) {
+			camera.stopPreview();
+		}
+
+		camera.release();
+		camera = null;
+		inPreview = false;
+
+		super.onPause();
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		new MenuInflater(this).inflate(R.menu.camera_options, menu);
+
+		return (super.onCreateOptionsMenu(menu));
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.camera) {
+			if (inPreview) {
+				camera.takePicture(null, null, photoCallback);
+				inPreview = false;
+			}
+		}
+
+		return (super.onOptionsItemSelected(item));
+	}
+
+	private Camera.Size getBestPreviewSize(int width, int height,
+			Camera.Parameters parameters) {
+		Camera.Size result = null;
+
+		for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
+			if (size.width <= width && size.height <= height) {
+				if (result == null) {
+					result = size;
+				} else {
+					int resultArea = result.width * result.height;
+					int newArea = size.width * size.height;
+
+					if (newArea > resultArea) {
+						result = size;
+					}
+				}
+			}
+		}
+
+		return (result);
+	}
+
+	private Camera.Size getSmallestPictureSize(Camera.Parameters parameters) {
+		Camera.Size result = null;
+
+		for (Camera.Size size : parameters.getSupportedPictureSizes()) {
+			if (result == null) {
+				result = size;
+			} else {
+				int resultArea = result.width * result.height;
+				int newArea = size.width * size.height;
+
+				if (newArea < resultArea) {
+					result = size;
+				}
+			}
+		}
+
+		return (result);
+	}
+
+	private void initPreview(int width, int height) {
+		if (camera != null && previewHolder.getSurface() != null) {
+			try {
+				camera.setPreviewDisplay(previewHolder);
+			} catch (Throwable t) {
+				Log.e("PreviewDemo-surfaceCallback",
+						"Exception in setPreviewDisplay()", t);
+				Toast.makeText(this, t.getMessage(), Toast.LENGTH_LONG).show();
+			}
+
+			if (!cameraConfigured) {
+				Camera.Parameters parameters = camera.getParameters();
+				Camera.Size size = getBestPreviewSize(width, height, parameters);
+				Camera.Size pictureSize = getSmallestPictureSize(parameters);
+
+				if (size != null && pictureSize != null) {
+					parameters.setPreviewSize(size.width, size.height);
+					parameters.setPictureSize(pictureSize.width,
+							pictureSize.height);
+					parameters.setPictureFormat(ImageFormat.JPEG);
+					camera.setParameters(parameters);
+					cameraConfigured = true;
+				}
+			}
+		}
+	}
+
+	private void startPreview() {
+		if (cameraConfigured && camera != null) {
+			// camera.setPreviewCallback(previewCallback);
+			camera.startPreview();
+			inPreview = true;
+		}
+	}
+
+	SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
+		public void surfaceCreated(SurfaceHolder holder) {
+			// no-op -- wait until surfaceChanged()
+		}
+
+		public void surfaceChanged(SurfaceHolder holder, int format, int width,
+				int height) {
+			initPreview(width, height);
+			startPreview();
+		}
+
+		public void surfaceDestroyed(SurfaceHolder holder) {
+			// no-op
+		}
+	};
+
+	Camera.PictureCallback photoCallback = new Camera.PictureCallback() {
+		public void onPictureTaken(byte[] data, Camera camera) {
+			Log.d(TAG, "Got picture data, saving to file...");
+			new SavePhotoTask().execute(data);
+			camera.startPreview();
+			inPreview = true;
+		}
+	};
+
+	class SavePhotoTask extends AsyncTask<byte[], String, String> {
+		@Override
+		protected String doInBackground(byte[]... jpeg) {
+			String storageDir = Environment.getExternalStorageDirectory()
+					.getAbsolutePath() + "/Pictures";
+			Log.d(TAG, "Attempting to save photo to " + storageDir);
+			File photo = new File(storageDir, Calendar.getInstance()
+					.getTimeInMillis() + ".jpg");
+
+			if (photo.exists()) {
+				photo.delete();
+			}
+
+			try {
+				FileOutputStream fos = new FileOutputStream(photo.getPath());
+
+				fos.write(jpeg[0]);
+				fos.close();
+			} catch (java.io.IOException e) {
+				Log.e("PictureDemo", "Exception in photoCallback", e);
+			}
+
+			return (null);
+		}
+	}
+
+	boolean continueTakingPics = false;
+
+	class TakePhotoTask extends AsyncTask {
+
+		@Override
+		protected Object doInBackground(Object... arg0) {
+			Log.d(TAG, "do in background called...");
+
+			while (continueTakingPics) {
+				try {
+					Thread.sleep(1000 * 2);
+					Log.d(TAG, "Taking photo...");
+					camera.takePicture(null, null, photoCallback);
+				} catch (InterruptedException e) {
+					continueTakingPics = false;
+				}
+			}
+			return null;
+		}
+
+	}
+
+	// Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
+	//
+	// int i = 1;
+	// @Override
+	// public void onPreviewFrame(byte[] data, Camera camera) {
+	// Log.d(TAG, "Got preview frame...");
+	// if(i % 15 == 0){
+	// Log.d(TAG, "Attempting to take picture...");
+	// new TakePhotoTask().execute();
+	// }
+	// i++;
+	// }
+	// };
 }
