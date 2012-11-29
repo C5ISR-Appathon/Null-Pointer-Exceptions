@@ -68,7 +68,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         mContentView = inflater.inflate(R.layout.device_detail, null);
-       // mContentView.findViewById(R.id.btn_disconnect).setVisibility(View.GONE);
         mContentView.findViewById(R.id.btn_start_client).setVisibility(View.GONE);
         mContentView.findViewById(R.id.btn_connect).setOnClickListener(new View.OnClickListener() {
 

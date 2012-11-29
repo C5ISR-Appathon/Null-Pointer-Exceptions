@@ -78,7 +78,7 @@ public class ClientModeActivity extends AbstractNetworkActivity {
     @Override
     public void onResume() {
         super.onResume();
-        receiver = new WiFiDirectBroadcastReceiver(manager, channel, this,true);
+        receiver = new WiFiDirectBroadcastReceiver(manager, channel, this,false);
         registerReceiver(receiver, intentFilter);
     }
 
@@ -116,11 +116,11 @@ public class ClientModeActivity extends AbstractNetworkActivity {
                 return true;
 
             case R.id.atn_direct_discover:
-                /*if (!isWifiP2pEnabled) {
+                if (!isWifiP2pEnabled) {
                     Toast.makeText(ClientModeActivity.this, R.string.p2p_off_warning,
                             Toast.LENGTH_SHORT).show();
                     return true;
-                }*/
+                }
                 final DeviceListFragment fragment = (DeviceListFragment) getFragmentManager()
                         .findFragmentById(R.id.frag_list);
                 fragment.onInitiateDiscovery();
@@ -239,12 +239,6 @@ public class ClientModeActivity extends AbstractNetworkActivity {
             }
         }
 
-    }
-    
-  //METHOD WHICH WILL HANDLE DYNAMIC INSERTION
-    public void addItems(View v) {
-        listItems.add("Clicked : "+clickCounter++);
-        adapter.notifyDataSetChanged();
     }
 }
 

@@ -73,7 +73,7 @@ public class ServerModeActivity extends AbstractNetworkActivity {
     @Override
     public void onResume() {
         super.onResume();
-        receiver = new WiFiDirectBroadcastReceiver(manager, channel, this,false);
+        receiver = new WiFiDirectBroadcastReceiver(manager, channel, this,true);
         registerReceiver(receiver, intentFilter);
     }
 
@@ -235,12 +235,6 @@ public class ServerModeActivity extends AbstractNetworkActivity {
             }
         }
 
-    }
-    
-  //METHOD WHICH WILL HANDLE DYNAMIC INSERTION
-    public void addItems(View v) {
-        listItems.add("Clicked : "+clickCounter++);
-        adapter.notifyDataSetChanged();
     }
 }
 
