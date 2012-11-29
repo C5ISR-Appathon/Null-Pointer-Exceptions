@@ -160,7 +160,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         // socket.
         if (info.groupFormed && info.isGroupOwner) {
             new FileServerAsyncTask(getActivity(), mContentView.findViewById(R.id.status_text))
-                    .execute();
+            .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
         } else if (info.groupFormed) {
             // The other device acts as the client. In this case, we enable the
             // get file button.
