@@ -4,15 +4,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Calendar;
 
-import mil.spawar.npe.FileTransferService;
 import mil.spawar.npe.R;
-import mil.spawar.npe.DeviceDetailFragment.FileServerAsyncTask;
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
-import android.net.wifi.p2p.WifiP2pInfo;
-import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,11 +18,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
-public class CameraCapture extends Activity implements ConnectionInfoListener {
+public class CameraCapture extends Activity {
 	private final static String TAG = "CameraCapture";
 
 	private SurfaceView preview = null;
@@ -77,7 +70,7 @@ public class CameraCapture extends Activity implements ConnectionInfoListener {
 	public void onPause() {
 
 		continueTakingPics = false;
-
+		
 		if (inPreview) {
 			camera.stopPreview();
 		}
@@ -209,36 +202,26 @@ public class CameraCapture extends Activity implements ConnectionInfoListener {
 		}
 	};
 
-	public String storageDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures";
-	
 	class SavePhotoTask extends AsyncTask<byte[], String, String> {
 		@Override
 		protected String doInBackground(byte[]... jpeg) {
-			String picDir = storageDir + "/" + R.id.device_address;
-			Log.d(TAG, "Attempting to save photo to " + picDir);
-			File photo = new File(picDir, Calendar.getInstance()
+			String storageDir = Environment.getExternalStorageDirectory()
+					.getAbsolutePath() + "/Pictures";
+			Log.d(TAG, "Attempting to save photo to " + storageDir);
+			File photo = new File(storageDir, Calendar.getInstance()
 					.getTimeInMillis() + ".jpg");
 
 			if (photo.exists()) {
 				photo.delete();
 			}
 
-			FileOutputStream fos = null;
 			try {
-				fos = new FileOutputStream(photo.getPath());
+				FileOutputStream fos = new FileOutputStream(photo.getPath());
 
 				fos.write(jpeg[0]);
-
-				Intent serviceIntent = new Intent(CameraCapture.this, FileTransferService.class);
-				serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
-				serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, photo.getPath());
-				serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS, info.groupOwnerAddress.getHostAddress());
-				serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
-				startService(serviceIntent);
-
+				fos.close();
 			} catch (java.io.IOException e) {
 				Log.e("PictureDemo", "Exception in photoCallback", e);
-				try {fos.close();} catch (Exception ex) { /* do nothing */};
 			}
 
 			return (null);
@@ -267,10 +250,17 @@ public class CameraCapture extends Activity implements ConnectionInfoListener {
 
 	}
 
-	WifiP2pInfo info;
-
-	@Override
-	public void onConnectionInfoAvailable(WifiP2pInfo info) {
-		this.info = info;
-	}
+	// Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
+	//
+	// int i = 1;
+	// @Override
+	// public void onPreviewFrame(byte[] data, Camera camera) {
+	// Log.d(TAG, "Got preview frame...");
+	// if(i % 15 == 0){
+	// Log.d(TAG, "Attempting to take picture...");
+	// new TakePhotoTask().execute();
+	// }
+	// i++;
+	// }
+	// };
 }
