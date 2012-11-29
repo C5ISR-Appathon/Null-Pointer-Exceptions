@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Calendar;
 
+import mil.spawar.npe.FileTransferService;
 import mil.spawar.npe.R;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
+import android.net.wifi.p2p.WifiP2pInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -221,6 +224,8 @@ public class CameraCapture extends Activity {
 			inPreview = true;
 		}
 	};
+	
+	WifiP2pInfo info;
 
 	class SavePhotoTask extends AsyncTask<byte[], String, String> {
 		@Override
@@ -239,6 +244,16 @@ public class CameraCapture extends Activity {
 				FileOutputStream fos = new FileOutputStream(photo.getPath());
 
 				fos.write(jpeg[0]);
+				
+				Intent serviceIntent = new Intent(CameraCapture.this, FileTransferService.class);
+		        serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
+		        serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, storageDir + Calendar.getInstance()
+						.getTimeInMillis() + ".jpg");
+		        serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
+		                info.groupOwnerAddress.getHostAddress());
+		        serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
+		        CameraCapture.this.startService(serviceIntent);
+				
 				fos.close();
 			} catch (java.io.IOException e) {
 				Log.e("PictureDemo", "Exception in photoCallback", e);
