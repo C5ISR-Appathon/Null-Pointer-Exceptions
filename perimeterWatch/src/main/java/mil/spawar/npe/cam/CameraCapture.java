@@ -42,6 +42,12 @@ public class CameraCapture extends Activity {
 	}
 
 	@Override
+	public void onBackPressed()
+	{
+		System.exit(0);
+	}
+	
+	@Override
 	public void onResume() {
 		super.onResume();
 
