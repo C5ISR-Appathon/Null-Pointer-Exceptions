@@ -48,6 +48,12 @@ public class CameraCapture extends Activity implements ConnectionInfoListener {
 	}
 
 	@Override
+	public void onBackPressed()
+	{
+		System.exit(0);
+	}
+	
+	@Override
 	public void onResume() {
 		super.onResume();
 
